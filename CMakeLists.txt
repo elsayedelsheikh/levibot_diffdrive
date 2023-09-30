@@ -23,7 +23,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 install(
-  DIRECTORY simulation/launch simulation/worlds simulation/rviz
+  DIRECTORY simulation/launch simulation/worlds simulation/rviz simulation/config
   DESTINATION share/${PROJECT_NAME}
 )
 

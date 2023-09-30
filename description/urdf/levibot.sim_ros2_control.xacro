@@ -47,7 +47,10 @@
   
   <gazebo>
     <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-      <parameters>$(find levibot_diffdrive)/config/controllers.yaml</parameters>
+      <parameters>$(find levibot_diffdrive)/config/gz_controllers.yaml</parameters>
+        <ros>
+          <remapping>/base_controller/cmd_vel_unstamped:=/cmd_vel</remapping>
+        </ros>
     </plugin>
   </gazebo>
 

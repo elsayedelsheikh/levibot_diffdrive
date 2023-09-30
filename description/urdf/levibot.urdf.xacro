@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="diffdrive_levibot">
   <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.core.xacro"/>
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.ros2_control.xacro"/>
   
-  <!-- <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.sim_ros2_control.xacro"/> -->
-  <!-- <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.gazebo.xacro"/> -->
+  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.sim_ros2_control.xacro"/>
+  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.gazebo.xacro"/>
 
+  <!-- <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.ros2_control.xacro"/> -->
+  
 </robot>
