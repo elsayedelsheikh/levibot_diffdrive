@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="diffdrive_levibot">
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.core.xacro"/>
-  
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.sim_ros2_control.xacro"/>
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.gazebo.xacro"/>
 
-  <!-- <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.ros2_control.xacro"/> -->
-  
+  <!-- paramters to be set from the launch file -->
+  <xacro:arg name="use_mock_hardware" default="false" />
+  <xacro:arg name="sim_gazebo_classic" default="false" />
+  <xacro:arg name="sim_gazebo" default="false" />
+  <xacro:arg name="simulation_controllers" default="" />
+
+  <xacro:include filename="$(find levibot_skidsteer)/urdf/levibot.core.xacro"/>
+  <xacro:include filename="$(find levibot_skidsteer)/ros2_control/levibot.ros2_control.xacro"/>
+
+  <xacro:levibot_ros2_control
+    name="levibot"
+    use_mock_hardware="$(arg use_mock_hardware)"
+    sim_gazebo_classic="$(arg sim_gazebo_classic)"
+    sim_gazebo="$(arg sim_gazebo)"/>
+
+  <xacro:if value="$(arg sim_gazebo_classic)">
+    <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <parameters>$(arg simulation_controllers)</parameters>
+        <ros>
+          <remapping>/base_controller/cmd_vel_unstamped:=/cmd_vel</remapping>
+        </ros>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+  <xacro:if value="$(arg sim_gazebo)">
+    <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(arg simulation_controllers)</parameters>
+        <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+        <ros>
+          <remapping>/base_controller/cmd_vel_unstamped:=/cmd_vel</remapping>
+          <remapping>/base_controller/odom:=/odom</remapping>
+        </ros>
+
+      </plugin>
+    </gazebo>
+  </xacro:if>
 </robot>

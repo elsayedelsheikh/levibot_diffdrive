@@ -21,7 +21,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="levibot_diffdrive",
+            default_value="levibot_skidsteer",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
@@ -36,7 +36,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="levibot_diffdrive",
+            default_value="levibot_skidsteer",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -83,7 +83,7 @@ def generate_launch_description():
     world_file = LaunchConfiguration("world_file")
 
     world_file = PathJoinSubstitution(
-        [FindPackageShare("levibot_diffdrive"), "worlds", world_file]
+        [FindPackageShare("levibot_skidsteer"), "worlds", world_file]
     )
 
 
