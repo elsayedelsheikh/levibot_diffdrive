@@ -130,6 +130,14 @@ def generate_launch_description():
         output="screen",
     )
 
+    # Bridge
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        output='screen'
+    )
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -183,6 +191,7 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
+            bridge,
             gazebo,
             gazebo_spawn_robot,
             robot_state_pub_node,
