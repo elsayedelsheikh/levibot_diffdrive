@@ -48,19 +48,19 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="lidar_link">
-    <sensor name='gpu_lidar' type='gpu_lidar'>
-      <pose>0 0 0 0 -0 0</pose>
+  <gazebo reference="levibot/base_link/lidar">
+    <sensor name='lidar' type='gpu_lidar'>
+      <pose>0 0 0 0 0 0</pose>
       <topic>scan</topic>
-      <update_rate>10</update_rate>
-      <enable_metrics>false</enable_metrics>
+      <update_rate>1000</update_rate>
+      <enable_metrics>true</enable_metrics>
       <lidar>
         <scan>
           <horizontal>
             <samples>640</samples>
             <resolution>1</resolution>
-            <min_angle>-1.3962600000000001</min_angle>
-            <max_angle>1.3962600000000001</max_angle>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
           </horizontal>
           <vertical>
             <samples>16</samples>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="diffdrive_levibot">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="levibot">
 
   <!-- paramters to be set from the launch file -->
   <xacro:arg name="use_mock_hardware" default="false" />
@@ -8,7 +8,6 @@
   <xacro:arg name="simulation_controllers" default="" />
 
   <xacro:include filename="$(find levibot_skidsteer)/urdf/levibot.core.xacro"/>
-
   <xacro:include filename="$(find levibot_skidsteer)/ros2_control/levibot.ros2_control.xacro"/>
 
   <xacro:levibot_ros2_control
