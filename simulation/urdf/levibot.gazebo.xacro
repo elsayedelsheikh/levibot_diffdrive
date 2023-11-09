@@ -52,8 +52,8 @@
     <sensor name='lidar' type='gpu_lidar'>
       <pose>0 0 0 0 0 0</pose>
       <topic>scan</topic>
-      <update_rate>1000</update_rate>
-      <enable_metrics>true</enable_metrics>
+      <update_rate>50</update_rate>
+      <enable_metrics>false</enable_metrics>
       <lidar>
         <scan>
           <horizontal>
