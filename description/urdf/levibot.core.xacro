@@ -167,6 +167,30 @@
     </xacro:inertial_box>
   </link>
 
+  <!-- LIDAR Link -->
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="-0.1 0.0 0.03" rpy="0.0 0.0 0.0"/>
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+  </joint>
+
+  <link name="lidar_link">
+    <collision>
+      <geometry>
+        <box size="0.03 0.03 0.025"/>
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.025"/>
+      </geometry>
+      <material name="red" />
+    </visual>
+    <xacro:inertial_box mass="0.007" x="0.03" y="0.03" z="0.025">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
 
 
 </robot>

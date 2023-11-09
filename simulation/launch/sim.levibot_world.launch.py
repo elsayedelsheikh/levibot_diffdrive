@@ -129,7 +129,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # Bridges
+    # Gazebo Bridges
     clock_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -140,6 +140,12 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=['/cmd_vel@geometry_msgs/msg/Twist[ignition.msgs.Twist'],
+        output='screen'
+    )
+    lidar_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/scan@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan'],
         output='screen'
     )
 
@@ -198,10 +204,11 @@ def generate_launch_description():
         + [
             clock_bridge,
             cmd_vel_bridge,
+            lidar_bridge,
             gazebo,
             gazebo_spawn_robot,
             robot_state_pub_node,
-            # delay_rviz_after_joint_state_broadcaster_spawner,
+            delay_rviz_after_joint_state_broadcaster_spawner,
             delay_joint_state_broadcaster_spawner_after_gazebo_spawn_robot,
         ]
         + delay_robot_controller_spawners_after_joint_state_broadcaster_spawner
