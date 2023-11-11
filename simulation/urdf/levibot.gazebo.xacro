@@ -2,36 +2,36 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">  
 
   <gazebo reference="chassis">
-    <material>Gazebo/White</material>
+    <material>Gazebo/Blue</material>
   </gazebo>
 
   <gazebo reference="rl_wheel_link">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="rr_wheel_link">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="fr_wheel_link">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="fl_wheel_link">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="imu_link">
     <gravity>true</gravity>
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/Green</material>
     <sensor name="imu_sensor" type="imu">
       <always_on>true</always_on>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu">
@@ -49,8 +49,8 @@
   </gazebo>
 
   <gazebo reference="levibot/base_link/lidar">
-    <sensor name='lidar' type='gpu_lidar'>
-      <pose relative_to='levibot/base_link/lidar'>0 0 0 0 0 0</pose>
+    <sensor name='levibot_lidar' type='ray'>
+      <pose>0 0 0 0 0 0</pose>
       <topic>scan</topic>
       <update_rate>100</update_rate>
       <always_on>1</always_on>
@@ -58,25 +58,38 @@
       <ray>
           <scan>
               <horizontal>
-                  <samples>640</samples>
+                  <samples>720</samples>
                   <resolution>1</resolution>
-                  <min_angle>-1.396263</min_angle>
-                  <max_angle>1.396263</max_angle>
+                  <min_angle>-1.570796</min_angle>
+                  <max_angle>1.570796</max_angle>
               </horizontal>
-              <vertical>
+              <!-- <vertical>
                   <samples>1</samples>
                   <resolution>0.01</resolution>
                   <min_angle>0</min_angle>
                   <max_angle>0</max_angle>
-              </vertical>
+              </vertical> -->
           </scan>
           <range>
               <min>0.08</min>
-              <max>10.0</max>
+              <max>20.0</max>
               <resolution>0.01</resolution>
           </range>
-          <visibility_mask>4294967294</visibility_mask>
+          <noise>
+            <type>gaussian</type>
+            <!-- Noise parameters based on published spec for Hokuyo laser
+                achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                reading. -->
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+          <!-- <visibility_mask>4294967294</visibility_mask> -->
       </ray>
+    <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+      <topicName>/scan</topicName>
+      <frameName>lidar_link</frameName>
+    </plugin>
     </sensor>
   </gazebo>
 
