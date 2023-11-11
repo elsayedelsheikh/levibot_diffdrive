@@ -29,7 +29,7 @@
     <material>Gazebo/Green</material>
   </gazebo>
 
-  <gazebo reference="imu_link">
+  <!-- <gazebo reference="imu_link">
     <gravity>true</gravity>
     <material>Gazebo/Green</material>
     <sensor name="imu_sensor" type="imu">
@@ -46,89 +46,36 @@
         </ros>
       </plugin>
     </sensor>
-  </gazebo>
-
-  <gazebo reference="levibot/base_link/lidar">
-    <sensor name='levibot_lidar' type='ray'>
-      <pose>0 0 0 0 0 0</pose>
-      <topic>scan</topic>
-      <update_rate>100</update_rate>
-      <always_on>1</always_on>
-      <visualize>1</visualize>
-      <ray>
-          <scan>
-              <horizontal>
-                  <samples>720</samples>
-                  <resolution>1</resolution>
-                  <min_angle>-1.570796</min_angle>
-                  <max_angle>1.570796</max_angle>
-              </horizontal>
-              <!-- <vertical>
-                  <samples>1</samples>
-                  <resolution>0.01</resolution>
-                  <min_angle>0</min_angle>
-                  <max_angle>0</max_angle>
-              </vertical> -->
-          </scan>
-          <range>
-              <min>0.08</min>
-              <max>20.0</max>
-              <resolution>0.01</resolution>
-          </range>
-          <noise>
-            <type>gaussian</type>
-            <!-- Noise parameters based on published spec for Hokuyo laser
-                achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
-                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
-                reading. -->
-            <mean>0.0</mean>
-            <stddev>0.01</stddev>
-          </noise>
-          <!-- <visibility_mask>4294967294</visibility_mask> -->
-      </ray>
-    <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
-      <topicName>/scan</topicName>
-      <frameName>lidar_link</frameName>
-    </plugin>
-    </sensor>
-  </gazebo>
-
-  <!-- Using ROS2 Control Instead -->
-  <!-- <gazebo>
-    <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
-
-      <ros>
-        <namespace>/demo</namespace>
-        <argument>cmd_vel:=cmd_demo</argument>
-        <argument>odom:=odom_demo</argument>
-      </ros>
-
-      <num_wheel_pairs>2</num_wheel_pairs>
-      
-      <left_joint>fl_wheel_joint</left_joint>
-      <right_joint>fr_wheel_joint</right_joint>
-
-      <left_joint>rl_wheel_joint</left_joint>
-      <right_joint>rr_wheel_joint</right_joint>
-
-      <wheel_separation>1.25</wheel_separation>
-      <wheel_separation>1.25</wheel_separation>
-
-      <wheel_diameter>0.06</wheel_diameter>
-      <wheel_diameter>0.06</wheel_diameter>
-
-      <max_wheel_torque>20</max_wheel_torque>
-      <max_wheel_acceleration>1.0</max_wheel_acceleration>
-
-      <publish_odom>true</publish_odom>
-      <publish_odom_tf>true</publish_odom_tf>
-      <publish_wheel_tf>true</publish_wheel_tf>
-
-      <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>chassis</robot_base_frame>
-
-    </plugin>
-
   </gazebo> -->
+
+  <gazebo reference="baselink/lidar_link/gpu_lidar">
+        <sensor name='gpu_lidar' type='gpu_lidar'>
+        <pose>0 0 0 0 0 0</pose>
+          <topic>scan</topic>
+          <update_rate>10</update_rate>
+          <lidar>
+            <scan>
+              <horizontal>
+                <samples>640</samples>
+                <resolution>1</resolution>
+                <min_angle>-1.396263</min_angle>
+                <max_angle>1.396263</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>1</samples>
+                <resolution>1</resolution>
+                <min_angle>0.0</min_angle>
+                <max_angle>0.0</max_angle>
+              </vertical>
+            </scan>
+            <range>
+              <min>0.08</min>
+              <max>10.0</max>
+              <resolution>0.01</resolution>
+            </range>
+          </lidar>
+          <visualize>true</visualize>
+        </sensor>
+  </gazebo>
 
 </robot>

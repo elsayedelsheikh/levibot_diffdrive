@@ -10,7 +10,7 @@ from launch.actions import (
 )
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, TextSubstitution
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -30,6 +30,13 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value="gz_controllers.yaml",
+            description="YAML file with the controllers configuration.",
+        )
+    )    
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "bridge_config_file",
+            default_value="bridges.yaml",
             description="YAML file with the controllers configuration.",
         )
     )
@@ -63,6 +70,7 @@ def generate_launch_description():
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
     robot_controller = LaunchConfiguration("robot_controller")
+    bridge_file = LaunchConfiguration("bridge_config_file")
 
 
     robot_controllers = PathJoinSubstitution(
@@ -70,6 +78,9 @@ def generate_launch_description():
     )
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "levibot.rviz"]
+    )
+    bridges_config_file = PathJoinSubstitution(
+                [FindPackageShare(description_package), "config", bridge_file]
     )
 
     robot_description_content = Command(
@@ -130,6 +141,12 @@ def generate_launch_description():
     )
 
     # Gazebo Bridges
+    # gz_bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     arguments=['--ros-args -p config_file:=', bridges_config_file],
+    #     output='screen'    
+    # )
     clock_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -202,6 +219,7 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
+            # gz_bridge,
             clock_bridge,
             cmd_vel_bridge,
             lidar_bridge,

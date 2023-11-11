@@ -190,6 +190,4 @@
     </xacro:inertial_box>
   </link>
 
-
-
 </robot>
