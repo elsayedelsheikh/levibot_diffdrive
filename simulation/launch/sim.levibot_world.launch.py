@@ -35,13 +35,6 @@ def generate_launch_description():
     )    
     declared_arguments.append(
         DeclareLaunchArgument(
-            "bridge_config_file",
-            default_value="bridges.yaml",
-            description="YAML file with the controllers configuration.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             "description_package",
             default_value="levibot_skidsteer",
             description="Description package with robot URDF/xacro files. Usually the argument \
@@ -70,7 +63,6 @@ def generate_launch_description():
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
     robot_controller = LaunchConfiguration("robot_controller")
-    # bridge_file = LaunchConfiguration("bridge_config_file")
 
 
     robot_controllers = PathJoinSubstitution(
@@ -79,9 +71,9 @@ def generate_launch_description():
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "levibot.rviz"]
     )
-    # bridges_config_file = PathJoinSubstitution(
-    #             [FindPackageShare(description_package), "config", bridge_file]
-    # )
+    bridges_config_file = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", "bridges.yaml"]
+    )
 
     robot_description_content = Command(
         [
@@ -141,29 +133,11 @@ def generate_launch_description():
     )
 
     # Gazebo Bridges
-    # gz_bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     arguments=['--ros-args -p config_file:=', bridges_config_file],
-    #     output='screen'    
-    # )
-    clock_bridge = Node(
+    gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
-        output='screen'
-    )
-    cmd_vel_bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=['/cmd_vel@geometry_msgs/msg/Twist[ignition.msgs.Twist'],
-        output='screen'
-    )
-    lidar_bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=['/scan@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan'],
-        output='screen'
+        arguments=["--ros-args","-p", "config_file:=/home/sayed/ros_rolling_ws/src/levibot/levibot_skidsteer/simulation/config/bridges.yaml"],
+        output='screen'    
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -219,10 +193,7 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
-            # gz_bridge,
-            clock_bridge,
-            cmd_vel_bridge,
-            lidar_bridge,
+            gz_bridge,
             gazebo,
             gazebo_spawn_robot,
             robot_state_pub_node,

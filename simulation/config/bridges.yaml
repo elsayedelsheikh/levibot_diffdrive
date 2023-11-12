@@ -3,21 +3,41 @@
   gz_topic_name: "/clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"
   gz_type_name: "ignition.msgs.Clock"
+  lazy: false
+  direction: GZ_TO_ROS
 
 ## cmd vel topic
-- ros_topic_name: "/cmd_vel"
-  gz_topic_name: "/cmd_vel"
-  ros_type_name: "geometry_msgs/msg/Twist"
-  gz_type_name: "ignition.msgs.Twist"
+# - ros_topic_name: "/cmd_vel"
+#   gz_topic_name: "/cmd_vel"
+#   ros_type_name: "geometry_msgs/msg/Twist"
+#   gz_type_name: "ignition.msgs.Twist"
+#   lazy: true 
+#   direction: BIDIRECTIONAL
 
 ## lidar scan topic
 - ros_topic_name: "/scan"
   gz_topic_name: "/scan"
   ros_type_name: "sensor_msgs/msg/LaserScan"
   gz_type_name: "ignition.msgs.LaserScan"
+  subscriber_queue: 5       # Default 10
+  publisher_queue: 6        # Default 10
+  lazy: false 
+  direction: GZ_TO_ROS
 
 ## pointcloud topic
 # - ros_topic_name: "/pointcloud"
 #   gz_topic_name: "/lidar/points"
 #   ros_type_name: "sensor_msgs/msg/PointCloud2"
 #   gz_type_name: "ignition.msgs.PointCloudPacked"
+
+## Example of a bridge between ROS and Ignition
+# - ros_topic_name: "ros_chatter"
+#   gz_topic_name: "ign_chatter"
+#   ros_type_name: "std_msgs/msg/String"
+#   gz_type_name: "ignition.msgs.StringMsg"
+#   subscriber_queue: 5       # Default 10
+#   publisher_queue: 6        # Default 10
+#   lazy: true                # Default "false"
+#   direction: BIDIRECTIONAL  # Default "BIDIRECTIONAL" - Bridge both directions
+#                             # "GZ_TO_ROS" - Bridge Ignition topic to ROS
+#                             # "ROS_TO_GZ" - Bridge ROS topic to Ignition
