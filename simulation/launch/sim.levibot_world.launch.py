@@ -70,7 +70,7 @@ def generate_launch_description():
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
     robot_controller = LaunchConfiguration("robot_controller")
-    bridge_file = LaunchConfiguration("bridge_config_file")
+    # bridge_file = LaunchConfiguration("bridge_config_file")
 
 
     robot_controllers = PathJoinSubstitution(
@@ -79,9 +79,9 @@ def generate_launch_description():
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "levibot.rviz"]
     )
-    bridges_config_file = PathJoinSubstitution(
-                [FindPackageShare(description_package), "config", bridge_file]
-    )
+    # bridges_config_file = PathJoinSubstitution(
+    #             [FindPackageShare(description_package), "config", bridge_file]
+    # )
 
     robot_description_content = Command(
         [

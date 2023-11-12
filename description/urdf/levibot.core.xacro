@@ -170,10 +170,10 @@
   <joint name="lidar_joint" type="fixed">
     <origin xyz="0.1 0.0 0.03" rpy="0.0 0.0 0.0"/>
     <parent link="base_link"/>
-    <child link="lidar_link"/>
+    <child link="levibot/base_link/gpu_lidar"/>
   </joint>
 
-  <link name="lidar_link">
+  <link name="levibot/base_link/gpu_lidar">
     <collision>
       <geometry>
         <box size="0.03 0.03 0.025"/>
