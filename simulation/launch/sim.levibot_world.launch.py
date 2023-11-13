@@ -94,20 +94,21 @@ def generate_launch_description():
             " ",
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
-
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[robot_description],
+        parameters=[
+            {"robot_description": robot_description_content},
+            {"use_sim_time": True},
+            ]
     )
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
-        arguments=["-d", rviz_config_file],
+        arguments=["-d", rviz_config_file, "--ros-args", "-p", "use_sim_time:=true"],
     )
 
     # Gazebo nodes

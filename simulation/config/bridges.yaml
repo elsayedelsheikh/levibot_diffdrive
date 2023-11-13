@@ -7,12 +7,12 @@
   direction: GZ_TO_ROS
 
 ## cmd vel topic
-# - ros_topic_name: "/cmd_vel"
-#   gz_topic_name: "/cmd_vel"
-#   ros_type_name: "geometry_msgs/msg/Twist"
-#   gz_type_name: "ignition.msgs.Twist"
-#   lazy: true 
-#   direction: BIDIRECTIONAL
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name: "/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "ignition.msgs.Twist"
+  lazy: true 
+  direction: BIDIRECTIONAL
 
 ## lidar scan topic
 - ros_topic_name: "/scan"
