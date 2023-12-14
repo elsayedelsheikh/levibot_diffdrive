@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(levibot_diffdrive)
+project(levibot)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -31,7 +31,7 @@ install(
 #   ARCHIVE DESTINATION lib
 #   LIBRARY DESTINATION lib
 #   RUNTIME DESTINATION bin
-#   # EXPORT export_ros2_control_demo_example_2
+#   # EXPORT export_levibot
 # )
 
 

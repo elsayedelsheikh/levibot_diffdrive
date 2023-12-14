@@ -10,7 +10,7 @@ from launch.actions import (
 )
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -21,7 +21,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="levibot_diffdrive",
+            default_value="levibot",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
@@ -32,11 +32,11 @@ def generate_launch_description():
             default_value="gz_controllers.yaml",
             description="YAML file with the controllers configuration.",
         )
-    )    
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="levibot_diffdrive",
+            default_value="levibot",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -71,9 +71,6 @@ def generate_launch_description():
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "levibot.rviz"]
     )
-    bridges_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", "bridges.yaml"]
-    )
 
     robot_description_content = Command(
         [
@@ -85,61 +82,56 @@ def generate_launch_description():
             " ",
             "use_mock_hardware:=false",
             " ",
-            "sim_gazebo_classic:=false",
+            "sim_gazebo_classic:=true",
             " ",
-            "sim_gazebo:=true",
+            "sim_gazebo:=false",
             " ",
             "simulation_controllers:=",
             robot_controllers,
             " ",
         ]
     )
+    robot_description = {"robot_description": robot_description_content}
+
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[
-            {"robot_description": robot_description_content},
-            {"use_sim_time": True},
-            ]
+        parameters=[robot_description],
     )
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
-        arguments=["-d", rviz_config_file, "--ros-args", "-p", "use_sim_time:=true"],
+        arguments=["-d", rviz_config_file],
     )
 
     # Gazebo nodes
-    if 'IGN_GAZEBO_RESOURCE_PATH' in environ:
-        environ['IGN_GAZEBO_RESOURCE_PATH'] =  environ['IGN_GAZEBO_RESOURCE_PATH'] + ':' + get_package_prefix('levibot_diffdrive') + '/share/levibot_diffdrive/worlds'
-    else:
-        environ['IGN_GAZEBO_RESOURCE_PATH'] =  get_package_prefix('levibot_diffdrive') + "/share/levibot_diffdrive/worlds"
+    # if '$GAZEBO_MODEL_PATH' in environ:
+    #     environ['$GAZEBO_MODEL_PATH'] =  environ['$GAZEBO_MODEL_PATH'] + ':' + get_package_prefix('levibot') + '/share/levibot/worlds'
+    # else:
+    #     environ['$GAZEBO_MODEL_PATH'] =  get_package_prefix('levibot') + "/share/levibot/worlds"
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("ros_gz_sim"), "/launch", "/gz_sim.launch.py"]
+            [FindPackageShare("gazebo_ros"), "/launch", "/gazebo.launch.py"]
         ),
-        launch_arguments={"gz_args": " -r -v 4 levibot_world.world"}.items(),
+        launch_arguments={
+            "world": get_package_prefix('levibot') + "/share/levibot/worlds/levibot_world_classic.world",
+        }.items(),
     )
 
     # Spawn robot
     gazebo_spawn_robot = Node(
-        package="ros_gz_sim",
-        executable="create",
+        package="gazebo_ros",
+        executable="spawn_entity.py",
         name="spawn_levibot",
-        arguments=["-name", "levibot", "-topic", "robot_description", "allow_renaming", "true", "-x", "13.9", "-y", "-10.6", "-z", "10.0"],
+        arguments=["-entity", "levibot", "-topic", "robot_description", "-x", "0.0", "-y", "0.0", "-z", "3.0"],
+        # arguments=["-entity", "levibot", "-topic", "robot_description", "-x", "13.9", "-y", "-10.6", "-z", "3.0"],
         output="screen",
     )
 
-    # Gazebo Bridges
-    gz_bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=["--ros-args","-p", "config_file:=/home/sayed/ros_rolling_ws/src/levibot/levibot_diffdrive/simulation/config/bridges.yaml"],
-        output='screen'    
-    )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
@@ -194,7 +186,6 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
-            gz_bridge,
             gazebo,
             gazebo_spawn_robot,
             robot_state_pub_node,

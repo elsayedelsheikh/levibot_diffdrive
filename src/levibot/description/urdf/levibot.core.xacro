@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- ============= Materials & Intertias =============  -->
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/inertial_macros.xacro"/>
-  <xacro:include filename="$(find levibot_diffdrive)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find levibot)/urdf/inertial_macros.xacro"/>
+  <xacro:include filename="$(find levibot)/urdf/materials.xacro"/>
 
   <!-- =============== Links & Joints =============== -->
   <link name="base_link"/>

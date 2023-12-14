@@ -13,7 +13,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="levibot_diffdrive",
+            default_value="levibot",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -55,7 +55,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("levibot_diffdrive"), "urdf", description_file]
+                [FindPackageShare("levibot"), "urdf", description_file]
             ),
             " ",
             "prefix:=",
