@@ -21,7 +21,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="levibot_skidsteer",
+            default_value="levibot_diffdrive",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
@@ -36,7 +36,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="levibot_skidsteer",
+            default_value="levibot_diffdrive",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -109,16 +109,16 @@ def generate_launch_description():
 
     # Gazebo nodes
     # if '$GAZEBO_MODEL_PATH' in environ:
-    #     environ['$GAZEBO_MODEL_PATH'] =  environ['$GAZEBO_MODEL_PATH'] + ':' + get_package_prefix('levibot_skidsteer') + '/share/levibot_skidsteer/worlds'
+    #     environ['$GAZEBO_MODEL_PATH'] =  environ['$GAZEBO_MODEL_PATH'] + ':' + get_package_prefix('levibot_diffdrive') + '/share/levibot_diffdrive/worlds'
     # else:
-    #     environ['$GAZEBO_MODEL_PATH'] =  get_package_prefix('levibot_skidsteer') + "/share/levibot_skidsteer/worlds"
+    #     environ['$GAZEBO_MODEL_PATH'] =  get_package_prefix('levibot_diffdrive') + "/share/levibot_diffdrive/worlds"
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [FindPackageShare("gazebo_ros"), "/launch", "/gazebo.launch.py"]
         ),
         launch_arguments={
-            "world": get_package_prefix('levibot_skidsteer') + "/share/levibot_skidsteer/worlds/levibot_world_classic.world",
+            "world": get_package_prefix('levibot_diffdrive') + "/share/levibot_diffdrive/worlds/levibot_world_classic.world",
         }.items(),
     )
 

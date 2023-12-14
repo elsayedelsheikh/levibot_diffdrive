@@ -30,8 +30,8 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "levibot_skidsteer/visibility_control.h"
-#include "levibot_skidsteer/arduino_comms.hpp"
+#include "levibot_diffdrive/visibility_control.h"
+#include "levibot_diffdrive/arduino_comms.hpp"
 
 namespace ros2_control_demo_example_2
 {

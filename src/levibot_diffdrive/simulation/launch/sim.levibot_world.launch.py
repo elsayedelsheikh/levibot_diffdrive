@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-import os
-from ament_index_python.packages import get_package_prefix, get_package_share_directory
+# $LICENSE$
+from os import environ
+from ament_index_python.packages import get_package_prefix
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -21,22 +21,22 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="levibot_skidsteer",
+            default_value="levibot_diffdrive",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
-    )
+    )    
     declared_arguments.append(
         DeclareLaunchArgument(
             "controllers_file",
-            default_value="controllers.yaml",
+            default_value="gz_controllers.yaml",
             description="YAML file with the controllers configuration.",
         )
-    )
+    )    
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="levibot_skidsteer",
+            default_value="levibot_diffdrive",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -50,26 +50,10 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "prefix",
-            default_value='""',
-            description="Prefix of the joint names, useful for \
-        multi-robot setup. If changed than also joint names in the controllers' configuration \
-        have to be updated.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             "robot_controller",
             default_value="base_controller",
             choices=["base_controller"],
             description="Robot controller to start.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "world_file",
-            default_value="farm.world",
-            description="World file to load.",
         )
     )
 
@@ -78,24 +62,19 @@ def generate_launch_description():
     controllers_file = LaunchConfiguration("controllers_file")
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
-    prefix = LaunchConfiguration("prefix")
     robot_controller = LaunchConfiguration("robot_controller")
-    world_file = LaunchConfiguration("world_file")
-
-    world_file = PathJoinSubstitution(
-        [FindPackageShare("levibot_skidsteer"), "worlds", world_file]
-    )
 
 
     robot_controllers = PathJoinSubstitution(
         [FindPackageShare(runtime_config_package), "config", controllers_file]
     )
-
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "levibot.rviz"]
     )
+    bridges_config_file = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", "bridges.yaml"]
+    )
 
-    # Get URDF via xacro
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -104,44 +83,62 @@ def generate_launch_description():
                 [FindPackageShare(description_package), "urdf", description_file]
             ),
             " ",
-            "prefix:=",
-            prefix,
-            " ",
             "use_mock_hardware:=false",
             " ",
-            "mock_sensor_commands:=false",
+            "sim_gazebo_classic:=false",
             " ",
-            "sim_gazebo_classic:=true",
-            " ",
-            "sim_gazebo:=false",
+            "sim_gazebo:=true",
             " ",
             "simulation_controllers:=",
             robot_controllers,
             " ",
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
-
-    controller_manager =Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_description, robot_controllers],
-    )
-
-    delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
-
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[robot_description],
+        parameters=[
+            {"robot_description": robot_description_content},
+            {"use_sim_time": True},
+            ]
     )
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
-        arguments=["-d", rviz_config_file],
+        arguments=["-d", rviz_config_file, "--ros-args", "-p", "use_sim_time:=true"],
+    )
+
+    # Gazebo nodes
+    if 'IGN_GAZEBO_RESOURCE_PATH' in environ:
+        environ['IGN_GAZEBO_RESOURCE_PATH'] =  environ['IGN_GAZEBO_RESOURCE_PATH'] + ':' + get_package_prefix('levibot_diffdrive') + '/share/levibot_diffdrive/worlds'
+    else:
+        environ['IGN_GAZEBO_RESOURCE_PATH'] =  get_package_prefix('levibot_diffdrive') + "/share/levibot_diffdrive/worlds"
+
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [FindPackageShare("ros_gz_sim"), "/launch", "/gz_sim.launch.py"]
+        ),
+        launch_arguments={"gz_args": " -r -v 4 levibot_world.world"}.items(),
+    )
+
+    # Spawn robot
+    gazebo_spawn_robot = Node(
+        package="ros_gz_sim",
+        executable="create",
+        name="spawn_levibot",
+        arguments=["-name", "levibot", "-topic", "robot_description", "allow_renaming", "true", "-x", "13.9", "-y", "-10.6", "-z", "10.0"],
+        output="screen",
+    )
+
+    # Gazebo Bridges
+    gz_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=["--ros-args","-p", "config_file:=/home/sayed/ros_rolling_ws/src/levibot/levibot_diffdrive/simulation/config/bridges.yaml"],
+        output='screen'    
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -163,9 +160,9 @@ def generate_launch_description():
 
     # Delay loading and activation of `joint_state_broadcaster` after start of ros2_control_node
     delay_joint_state_broadcaster_spawner_after_gazebo_spawn_robot = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=controller_manager,
-            on_start=[joint_state_broadcaster_spawner],
+        event_handler=OnProcessExit(
+            target_action=gazebo_spawn_robot,
+            on_exit=[joint_state_broadcaster_spawner],
         )
     )
 
@@ -177,13 +174,13 @@ def generate_launch_description():
         )
     )
 
-    # Delay loading and activation of robot_controller after `controller_manager` is started
-    delay_robot_controller_spawners_after_controller_manage_start = []
+    # Delay loading and activation of robot_controller after `joint_state_broadcaster`
+    delay_robot_controller_spawners_after_joint_state_broadcaster_spawner = []
     for controller in robot_controller_spawners:
-        delay_robot_controller_spawners_after_controller_manage_start += [
+        delay_robot_controller_spawners_after_joint_state_broadcaster_spawner += [
             RegisterEventHandler(
-                event_handler=OnProcessStart(
-                    target_action=controller_manager,
+                event_handler=OnProcessExit(
+                    target_action=joint_state_broadcaster_spawner,
                     on_exit=[
                         TimerAction(
                             period=3.0,
@@ -197,9 +194,12 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
+            gz_bridge,
+            gazebo,
+            gazebo_spawn_robot,
             robot_state_pub_node,
-            delayed_controller_manager,
-            # delay_rviz_after_joint_state_broadcaster_spawner,
+            delay_rviz_after_joint_state_broadcaster_spawner,
+            delay_joint_state_broadcaster_spawner_after_gazebo_spawn_robot,
         ]
-        + delay_robot_controller_spawners_after_controller_manage_start
+        + delay_robot_controller_spawners_after_joint_state_broadcaster_spawner
     )

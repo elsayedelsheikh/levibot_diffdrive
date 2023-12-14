@@ -7,8 +7,8 @@
   <xacro:arg name="sim_gazebo" default="false" />
   <xacro:arg name="simulation_controllers" default="" />
 
-  <xacro:include filename="$(find levibot_skidsteer)/urdf/levibot.core.xacro"/>
-  <xacro:include filename="$(find levibot_skidsteer)/ros2_control/levibot.ros2_control.xacro"/>
+  <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.core.xacro"/>
+  <xacro:include filename="$(find levibot_diffdrive)/ros2_control/levibot.ros2_control.xacro"/>
 
   <xacro:levibot_ros2_control
     name="levibot"
@@ -17,7 +17,7 @@
     sim_gazebo="$(arg sim_gazebo)"/>
 
   <xacro:if value="$(arg sim_gazebo_classic)">
-    <xacro:include filename="$(find levibot_skidsteer)/urdf/levibot.gazebo.xacro"/>
+    <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.gazebo.xacro"/>
     <gazebo>
       <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
         <parameters>$(arg simulation_controllers)</parameters>
@@ -29,7 +29,7 @@
   </xacro:if>
 
   <xacro:if value="$(arg sim_gazebo)">
-    <xacro:include filename="$(find levibot_skidsteer)/urdf/levibot.gazebo.xacro"/>
+    <xacro:include filename="$(find levibot_diffdrive)/urdf/levibot.gazebo.xacro"/>
     <gazebo>
         <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>$(arg simulation_controllers)</parameters>
